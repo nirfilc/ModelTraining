@@ -102,7 +102,7 @@ def enrich_country_dict(destination_path: str, path: str, country: str, country_
         try:
             curr_json = json.load(read_file)
             for user in curr_json:
-                if user['country'] == country:
+                if user['country'] == country and  not is_short_and_not_date(user['password']):
                     if len(country_data) >= MAX_FILE_ENTRIES:
                         save_json_array_to_file(country_data, destination_path + "" f"/{country}" + f"/{country}_{file_index}.json")
                         file_index += 1
@@ -113,3 +113,10 @@ def enrich_country_dict(destination_path: str, path: str, country: str, country_
 
     return (country_data, file_index)
 
+def is_short_and_not_date(password):
+    """
+        Allow all-digits password to be 6 chars or longer (to represent dates).Else, 8 chars or longer.
+    """
+    if any(c.isalpha() for c in password):
+        return len(password) < 8
+    return len(password) < 6

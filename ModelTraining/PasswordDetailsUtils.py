@@ -66,6 +66,15 @@ def is_leagal_password(password):
     """
     return all(ord(c) < 128 for c in password)
 
+def is_short_and_not_date(password):
+    """
+        Allow all-digits password to be 6 chars or longer (to represent dates).Else, 8 chars or longer.
+    """
+    if any(c.isalpha() for c in password):
+        return len(password) < 8
+    return len(password) < 6
+    
+
 def get_base_word_leet_pattern(password):
     leet_pattern = []
     unleet_password = ""
