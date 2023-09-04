@@ -154,38 +154,40 @@ def execute(country: str):
     destination_path = os.path.join(destination_base_path, country)
     Path(destination_path).mkdir(parents=True, exist_ok=True)
     count_dics = create_count_dictionaries(base_path, country, True, destination_path)
-    create_probability_disribution(count_dics, destination_path, 500)
-
-def main():
-    num_processes = multiprocessing.cpu_count()
-    # print start time
-    print("start: " + str(datetime.datetime.now()))
-
-    countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
-    with multiprocessing.Pool(processes=num_processes) as pool:
-        pool.map(execute, countries)
-
-    # count_dics = create_count_dictionaries(base_path, "", True)
-    # create_probability_disribution(count_dics, base_path, 1)
-    # print("end: " + str(datetime.datetime.now()))
-
-
-
+    create_probability_disribution(count_dics, destination_path, 100)
 
 # def main():
+#     num_processes = multiprocessing.cpu_count()
 #     # print start time
 #     print("start: " + str(datetime.datetime.now()))
-#     base_path = "C:\Country_Data"
-#     destination_base_path = "C:\School_data\distributions"
+
 #     countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
-#     for country in countries:
-#         destination_path = os.path.join(destination_base_path, country)
-#         Path(destination_path).mkdir(parents=True, exist_ok=True)
-#         count_dics = create_count_dictionaries(base_path, country, True, destination_path)
-#         create_probability_disribution(count_dics, destination_path, 500)
+#     with multiprocessing.Pool(processes=num_processes) as pool:
+#         pool.map(execute, countries)
+
 #     # count_dics = create_count_dictionaries(base_path, "", True)
 #     # create_probability_disribution(count_dics, base_path, 1)
 #     # print("end: " + str(datetime.datetime.now()))
+
+
+
+
+def main():
+    # print start time
+    print("start: " + str(datetime.datetime.now()))
+    base_path = "C:\Country_Data"
+    destination_base_path = "C:\School_data\distributions"
+    countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
+    for country in countries:
+        for ration in [1000]:
+            destination_path = os.path.join(destination_base_path, country)
+            Path(destination_path).mkdir(parents=True, exist_ok=True)
+            # count_dics = create_count_dictionaries(base_path, country, True, destination_path)
+            count_dics = json.load(open(os.path.join(destination_path, "count_dict.json"), 'r'))
+            create_probability_disribution(count_dics, destination_path, ration)
+    # count_dics = create_count_dictionaries(base_path, "", True)
+    # create_probability_disribution(count_dics, base_path, 1)
+    # print("end: " + str(datetime.datetime.now()))
 
 if __name__ == "__main__":
     main()
