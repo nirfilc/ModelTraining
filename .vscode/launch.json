@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["C:\\Users\\nirfi\\Downloads\\BreachCompilation\\data\\m", "label"],
+            "args": ["C:\\School_data", "country", "C:\\Country_Data"],
             "purpose": ["debug-in-terminal"]
         }
     ]

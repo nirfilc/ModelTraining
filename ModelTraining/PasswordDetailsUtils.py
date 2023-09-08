@@ -76,6 +76,9 @@ def is_short_and_not_date(password):
     
 
 def get_base_word_leet_pattern(password):
+    """
+        Gets the leet pattern of the base word of the provided password, according to the leet transformations described in https://arxiv.org/abs/1912.02551.
+    """
     leet_pattern = []
     unleet_password = ""
     leet_transformations_dict = {"0": (1, "o"), "@": (2, "a"), "4": (3, "a"), "$": (4, "s"), "5": (5, "s"), "3": (6, "e"), 6: (7, "g"), 9: (8, "g"), "+": (9, "t"), "7": (10, "t"), "2": (11, "z"), "1": (12, "i"), "!": (13, "i"), "%": (14, "x")}
@@ -95,10 +98,5 @@ def get_base_word_leet_pattern(password):
 def escape_password(password: str):
     escape_password = codecs.encode(password, 'unicode_escape')
     return escape_password
-
-# a = "asdasd"
-# b = codecs.encode(a, 'unicode_escape')
-# d = codecs.decode(a, 'unicode_escape')
-# c = 1 + 1
 
 
