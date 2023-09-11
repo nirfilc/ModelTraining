@@ -2,6 +2,7 @@ import datetime
 import heapq
 import os
 from collections import defaultdict
+import sys
 import PasswordDetailsUtils
 import json
 from pathlib import Path
@@ -79,6 +80,19 @@ def count_to_distribution(count_dict: defaultdict):
     
 
 def create_count_dictionaries(path: str, country: str, save_count_dict: bool, destination_path: str):
+    """
+        Creates a count dicitonary of {password: number_of_occurences} for each of the following:
+            1. Prefixes
+            2. Base words
+            3. Suffixes
+            4. Shift patterns
+            5. Leet patterns
+        Args:
+            path: Path of the passowrds
+            country: The country of the passwords
+            save_count_dict: If True, saves the count dictionaries to a file
+            destination_path: The path to save the count dictionaries to
+    """
     prefix_count = defaultdict(int)
     base_word_count = defaultdict(int) 
     suffix_count = defaultdict(int) 
@@ -137,57 +151,76 @@ def create_probability_disribution(count_dics: list[dict[str, any]], destination
         json.dump(meta_data, file, indent=4)
 
 def get_top_n_values(n: int, distribution_dict: dict):
+    """
+        Returns a dictionary of the top n values in the provided dictionary
+    """
     top_n_values = heapq.nlargest(n, distribution_dict.items(), key=lambda item: item[1])
     top_n_values_dict = {key: value for key, value in top_n_values}
     return top_n_values_dict
 
-
-# countries = ["Ukraine"] #["Ukraine", "China", "Poland", "United Kingdom (common practice)", "France", "Germany", "Japan"]
-# base_path = "C:\\Users\\nirfi\\Desktop\\data_by_country\\new_data"
-# for root, directories, files in os.walk(base_path):
-#     for directory in directories:
-#         create_probability_disribution(os.path.join(base_path, directory), "China", True)
-
 def execute(country: str):
+    """
+        Creates the sub model for each country for each ratio. If needed, creates the count dictionaries.
+    """
     base_path = "C:\Country_Data"
     destination_base_path = "C:\School_data\distributions"
     destination_path = os.path.join(destination_base_path, country)
     Path(destination_path).mkdir(parents=True, exist_ok=True)
-    count_dics = create_count_dictionaries(base_path, country, True, destination_path)
-    create_probability_disribution(count_dics, destination_path, 100)
+    create_count_dictionaries(base_path, country, True, destination_path)
 
-# def main():
-#     num_processes = multiprocessing.cpu_count()
-#     # print start time
-#     print("start: " + str(datetime.datetime.now()))
+def count_dict_to_distribution_dict(country: str, destination_base_path: str, base_path, load_from_file: bool):
+    """
+        Creates the sub model for each country for each ratio. If needed, creates the count dictionaries.
+    """
+    destination_path = os.path.join(destination_base_path, country)
+    Path(destination_path).mkdir(parents=True, exist_ok=True)
+    count_dics = json.load(open(os.path.join(destination_path, "count_dict.json"), 'r')) if load_from_file else create_count_dictionaries(base_path, country, True, destination_path)
+    for ratio in [1000, 500, 200, 100]:
+        create_probability_disribution(count_dics, destination_path, ratio)
 
-#     countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
-#     with multiprocessing.Pool(processes=num_processes) as pool:
-#         pool.map(execute, countries)
+def runAsync():
+    """
+        An async version of the main function
+    """
+    num_processes = multiprocessing.cpu_count()
+    # print start time
+    print("start: " + str(datetime.datetime.now()))
+    countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
+    destination_base_path = "C:\School_data\distributions"
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        pool.map(execute, countries)
+    for country in countries:
+        count_dict_to_distribution_dict(country, destination_base_path, "",True)
+    print("end: " + str(datetime.datetime.now()))
 
-#     # count_dics = create_count_dictionaries(base_path, "", True)
-#     # create_probability_disribution(count_dics, base_path, 1)
-#     # print("end: " + str(datetime.datetime.now()))
-
-
-
-
-def main():
+def runSync(load_from_file: bool = False):
+    """"
+        A sync version of the main function
+    """
     # print start time
     print("start: " + str(datetime.datetime.now()))
     base_path = "C:\Country_Data"
     destination_base_path = "C:\School_data\distributions"
     countries = ["China", "Poland", "United Kingdom (common practice)", "Italy", "India", "France", "Germany", "Japan"]
     for country in countries:
-        for ration in [1000]:
-            destination_path = os.path.join(destination_base_path, country)
-            Path(destination_path).mkdir(parents=True, exist_ok=True)
-            # count_dics = create_count_dictionaries(base_path, country, True, destination_path)
-            count_dics = json.load(open(os.path.join(destination_path, "count_dict.json"), 'r'))
-            create_probability_disribution(count_dics, destination_path, ration)
-    # count_dics = create_count_dictionaries(base_path, "", True)
-    # create_probability_disribution(count_dics, base_path, 1)
-    # print("end: " + str(datetime.datetime.now()))
+        count_dict_to_distribution_dict(country, destination_base_path, base_path, load_from_file)
+    print("end: " + str(datetime.datetime.now()))
+
+
+def main():
+    """
+        Creates the sub model for each country for each ratio. If needed, creates the count dictionaries.
+        Usage: python CreateProbabilityDistribution.py [async/sync] [load_from_file]
+        Args:
+            async/sync: If async, the program will run in parallel. If sync, the program will run in serial.
+            load_from_file: If True, the program will load the count dictionaries from a file. If False, the program will create the count dictionaries.
+    """
+    isAsync = sys.argv[1] == "async"
+    load_from_file = bool(sys.argv[2])
+    if isAsync:
+        runAsync()
+    else:
+        runSync(load_from_file)
 
 if __name__ == "__main__":
     main()
