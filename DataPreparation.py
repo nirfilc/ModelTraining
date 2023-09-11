@@ -2,7 +2,7 @@ import os
 import sys
 from collections import defaultdict
 from FilesUtils import save_to_log, save_json_array_to_file
-from DataUtils import create_origin_label, aggregate_meta_data_from_labeled_data, aggregate_meta_data_from_meta_data, enrich_country_dict
+from DataLabelingUtils import create_origin_label, aggregate_meta_data_from_labeled_data, aggregate_meta_data_from_meta_data, enrich_country_dict
 
 def label_all_files_in_path(path: str):
     """

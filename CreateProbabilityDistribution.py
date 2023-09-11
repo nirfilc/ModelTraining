@@ -3,10 +3,11 @@ import heapq
 import os
 from collections import defaultdict
 import sys
-import PasswordDetailsUtils
+import ModelTrainingUtils
 import json
 from pathlib import Path
 import multiprocessing
+import DataLabelingUtils
 
 def save_distribution(data: dict, file_name: str, path: str):
     """
@@ -35,22 +36,22 @@ def enrich_counts_from_files(file_path: str, base_word_count: defaultdict, prefi
         array = json.load(read_file)
         for user in array:
             password = str(user['password']).removesuffix("\n")
-            if (not PasswordDetailsUtils.is_leagal_password(password)) or (PasswordDetailsUtils.is_short_and_not_date(password)):
+            if (not DataLabelingUtils.is_legal_password(password)) or (DataLabelingUtils.is_short_and_not_date(password)):
                 ilegal_passwords += 1
                 continue
-            [prefix, base_word, suffix] = PasswordDetailsUtils.parse_password_to_3d(password)
+            [prefix, base_word, suffix] = ModelTrainingUtils.parse_password_to_3d(password)
             if suffix_count != None:
                 suffix_count[suffix] += 1
             if prefix_count != None:
                 prefix_count[prefix] += 1
             if shift_pattern_count != None:
-                shift_pattern = PasswordDetailsUtils.get_base_word_shift_pattern(base_word)
+                shift_pattern = ModelTrainingUtils.get_base_word_shift_pattern(base_word)
                 if len(shift_pattern) == len(base_word):
                     shift_pattern_as_string = "all-cap"
                 shift_pattern_as_string = str(shift_pattern)
                 shift_pattern_count[shift_pattern_as_string] += 1
             if leet_pattern_count != None:
-                (leet_pattern, base_word) = PasswordDetailsUtils.get_base_word_leet_pattern(base_word)
+                (leet_pattern, base_word) = ModelTrainingUtils.get_base_word_leet_pattern(base_word)
                 leet_pattern_as_string = str(leet_pattern)
                 leet_pattern_count[leet_pattern_as_string] += 1
             if base_word_count != None:
@@ -216,7 +217,7 @@ def main():
             load_from_file: If True, the program will load the count dictionaries from a file. If False, the program will create the count dictionaries.
     """
     isAsync = sys.argv[1] == "async"
-    load_from_file = bool(sys.argv[2])
+    load_from_file = (sys.argv[2]).lower() == "true"
     if isAsync:
         runAsync()
     else:

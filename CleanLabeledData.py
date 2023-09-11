@@ -1,12 +1,7 @@
 import os
 import json
 import sys
-
-def is_ascii(s):
-    """
-        Check if string is ascii.
-    """
-    return all(ord(char) < 128 for char in s)
+from DataLabelingUtils import is_legal_password
 
 def filter_passwords(data):
     """
@@ -16,7 +11,7 @@ def filter_passwords(data):
     ilegal_passwords_count = 0
     for item in data:
         json_item = json.loads(item)
-        if 'password' in json_item and is_ascii(json_item['password']):
+        if 'password' in json_item and is_legal_password(json_item['password']):
             filtered_data.append(json_item)
         else:
             ilegal_passwords_count += 1
@@ -85,4 +80,3 @@ def main():
         
 if __name__ == "__main__":
     main()        
-

@@ -3,7 +3,10 @@ from world.database import Database # Source: https://gitlab.com/warsaw/world
 import json
 from FilesUtils import save_json_array_to_file # Source: https://github.com/john-kurkowski/tldextract
 
-def is_ascii(s):
+def is_legal_password(s):
+    """
+        Source: isascci() here - https://github.com/lirondavid/PESrank/blob/master/PESrank/PESrank.py#L47
+    """
     return all(ord(char) < 128 for char in s)
 
 def create_origin_label(path, domains_count):
@@ -25,7 +28,7 @@ def create_origin_label(path, domains_count):
             [email, password] = parse_email_password(string_content)
         except:
             continue
-        if not is_ascii(password):
+        if not is_legal_password(password):
             continue
         try:
             tld = parse_domain(email)
@@ -64,8 +67,6 @@ def parse_domain(email):
     suffix = extract_result.suffix 
     tld = suffix.split(".")[-1]
     return tld
-
-# create_origin_label(path)
 
 def aggregate_meta_data_from_labeled_data(path, domains_count):
     """
