@@ -1,7 +1,0 @@
-import json
-
-def aggregate_meta_data(path, domains_count):
-    array = json.load(path)
-    for user in array:
-        country = user["country"]
-        domains_count[country] += 1
