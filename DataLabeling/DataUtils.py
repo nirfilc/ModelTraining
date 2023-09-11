@@ -1,7 +1,7 @@
 import tldextract
 from world.database import Database # Source: https://gitlab.com/warsaw/world
 import json
-from Utils import save_json_array_to_file # Source: https://github.com/john-kurkowski/tldextract
+from FilesUtils import save_json_array_to_file # Source: https://github.com/john-kurkowski/tldextract
 
 def is_ascii(s):
     return all(ord(char) < 128 for char in s)
