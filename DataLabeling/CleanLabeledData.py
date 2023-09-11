@@ -3,9 +3,15 @@ import json
 import sys
 
 def is_ascii(s):
+    """
+        Check if string is ascii.
+    """
     return all(ord(char) < 128 for char in s)
 
 def filter_passwords(data):
+    """
+        Filter ilegal passwords from data.
+    """
     filtered_data = []
     ilegal_passwords_count = 0
     for item in data:
@@ -17,6 +23,9 @@ def filter_passwords(data):
     return filtered_data, ilegal_passwords_count
 
 def clean_labeled_file(file_name: str, path: str):
+    """
+        Clean a labeled file from ilegal passwords.
+    """
     if not str.endswith(file_name, "labeled_data.json"):
         return 0, 0
     file_path = os.path.join(path, file_name)
@@ -40,6 +49,9 @@ def clean_labeled_file(file_name: str, path: str):
         print(f"An error occurred: {e}")
 
 def clean_labeled_data(path: str):
+    """
+        Clean all labeled data from ilegal passwords in the provided path.
+    """
     total_legal_passwords, total_ilegal_passwords = 0, 0
     failed_files = []
     if os.path.isdir(path):
@@ -60,9 +72,6 @@ def clean_labeled_data(path: str):
         file.write(f"Total ilegal passwords: {total_ilegal_passwords}\n")
         file.write(f"Total passwords: {total_legal_passwords + total_ilegal_passwords}\n")
         file.write(f"Failed files: {failed_files}\n")
-
-
-
 
 def main():
     base_path = sys.argv[1].replace("\\", "/")
